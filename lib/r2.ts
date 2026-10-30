@@ -63,6 +63,9 @@ export async function putObject(
     body: body as unknown as BodyInit,
     headers: {
       "Content-Type": contentType,
+      // R2 answers 411 MissingContentLength without this, and Vercel's fetch
+      // does not add it for a Uint8Array body the way local Node does.
+      "Content-Length": String(body.byteLength),
       "Cache-Control": "public, max-age=31536000, immutable",
     },
   });
