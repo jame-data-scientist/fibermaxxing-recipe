@@ -12,7 +12,8 @@ import {
 import { DIET_TAGS, PAGE_SIZE, TAG_LABELS } from "@/lib/site";
 import { cn, formatNumber } from "@/lib/utils";
 
-export const revalidate = 60;
+// D1 is queried over a no-store POST, which Next cannot prerender at build time.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "All recipes",

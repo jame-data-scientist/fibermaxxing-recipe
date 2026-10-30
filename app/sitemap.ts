@@ -3,6 +3,9 @@ import type { MetadataRoute } from "next";
 import { recipeSlugs } from "@/lib/queries/recipes";
 import { absoluteUrl } from "@/lib/site";
 
+// Same D1 constraint as the pages: build a request-time sitemap, not a cached one.
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/"), priority: 1, changeFrequency: "daily" },

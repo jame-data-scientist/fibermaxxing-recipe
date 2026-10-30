@@ -16,7 +16,8 @@ import {
 import { SITE_NAME, TAG_LABELS, absoluteUrl } from "@/lib/site";
 import { formatDate, formatMinutes, formatNumber } from "@/lib/utils";
 
-export const revalidate = 60;
+// D1 is queried over a no-store POST, which Next cannot prerender at build time.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

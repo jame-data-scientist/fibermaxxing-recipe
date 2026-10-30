@@ -11,7 +11,8 @@ import {
 } from "@/lib/queries/recipes";
 import { cn, formatNumber } from "@/lib/utils";
 
-export const revalidate = 60;
+// D1 is queried over a no-store POST, which Next cannot prerender at build time.
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const [featured, latest, stats] = await Promise.all([
