@@ -24,6 +24,22 @@ import { SEED_RECIPES } from "../seed/recipes";
 
 const SEED_PATH = resolve(import.meta.dirname, "..", "seed", "foods.json");
 
+/**
+ * Cloudflare D1 rejects any statement with more than 100 bound parameters
+ * (SQLITE_ERROR: too many SQL variables). Local SQLite allows far more, so
+ * batches must be sized for D1 or the seed only fails against production.
+ */
+const D1_MAX_PARAMS = 100;
+
+function batch<T>(rows: T[], paramsPerRow: number): T[][] {
+  const size = Math.max(1, Math.floor(D1_MAX_PARAMS / paramsPerRow));
+  const batches: T[][] = [];
+  for (let i = 0; i < rows.length; i += size) {
+    batches.push(rows.slice(i, i + size));
+  }
+  return batches;
+}
+
 interface SeedFood {
   fdcId: string;
   description: string;
@@ -57,14 +73,15 @@ async function main() {
   };
   console.log(`Seeding ${payload.foods.length} USDA foods…`);
 
-  // D1 allows 100 bound parameters per statement; foods has 13 columns, so a
-  // batch of seven rows stays under the limit on both D1 and local SQLite.
-  const chunks: SeedFood[][] = [];
-  for (let i = 0; i < payload.foods.length; i += 7) {
-    chunks.push(payload.foods.slice(i, i + 7));
-  }
+  // foods binds 15 parameters per row (created_at is a SQL default expression).
+  const chunks = batch(payload.foods, 15);
 
-  for (const chunk of chunks) {
+  for (const [index, chunk] of chunks.entries()) {
+    if (index % 40 === 0) {
+      console.log(
+        `  ${Math.min(index * chunk.length, payload.foods.length)}/${payload.foods.length} foods…`,
+      );
+    }
     await db
       .insert(foods)
       .values(
@@ -113,10 +130,9 @@ async function main() {
         gramWeight: p.gramWeight,
       })),
     );
-    if (portions.length) {
-      for (let i = 0; i < portions.length; i += 18) {
-        await db.insert(foodPortions).values(portions.slice(i, i + 18));
-      }
+    // food_portions binds 5 parameters per row (id is auto-incremented).
+    for (const slice of batch(portions, 5)) {
+      await db.insert(foodPortions).values(slice);
     }
   }
 
@@ -217,31 +233,35 @@ async function main() {
       })
       .returning({ id: recipes.id });
 
-    await db.insert(schema.recipeIngredients).values(
-      rows.map((row) => ({
-        recipeId: created.id,
-        position: row.position,
-        rawText: `${unitLabel(row.ingredient.amount, row.ingredient.unit)} ${row.food.commonName ?? row.food.description}`,
-        amount: row.ingredient.amount,
-        unit: row.ingredient.unit,
-        foodFdcId: row.food.fdcId,
-        grams: row.grams,
-        note: row.ingredient.note ?? null,
-        mappingStatus: "mapped" as const,
-      })),
-    );
+    // recipe_ingredients binds 10 parameters per row, including the generated id.
+    const ingredientRows = rows.map((row) => ({
+      recipeId: created.id,
+      position: row.position,
+      rawText: `${unitLabel(row.ingredient.amount, row.ingredient.unit)} ${row.food.commonName ?? row.food.description}`,
+      amount: row.ingredient.amount,
+      unit: row.ingredient.unit,
+      foodFdcId: row.food.fdcId,
+      grams: row.grams,
+      note: row.ingredient.note ?? null,
+      mappingStatus: "mapped" as const,
+    }));
+    for (const slice of batch(ingredientRows, 10)) {
+      await db.insert(schema.recipeIngredients).values(slice);
+    }
 
-    await db.insert(schema.recipeSteps).values(
-      seed.steps.map((text, position) => ({
-        recipeId: created.id,
-        position,
-        text,
-      })),
-    );
+    const stepRows = seed.steps.map((text, position) => ({
+      recipeId: created.id,
+      position,
+      text,
+    }));
+    for (const slice of batch(stepRows, 4)) {
+      await db.insert(schema.recipeSteps).values(slice);
+    }
 
-    await db.insert(schema.recipeTags).values(
-      tags.map((tag) => ({ recipeId: created.id, tag })),
-    );
+    const tagRows = tags.map((tag) => ({ recipeId: created.id, tag }));
+    for (const slice of batch(tagRows, 2)) {
+      await db.insert(schema.recipeTags).values(slice);
+    }
 
     await db.insert(schema.recipeNutrition).values({
       recipeId: created.id,

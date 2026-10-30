@@ -19,6 +19,7 @@ import { FieldError, Input, Label, Select, Textarea } from "@/components/ui/fiel
 import { submitRecipe, type SubmitState } from "@/app/actions/submit";
 import { countries } from "@/lib/countries";
 import type { FoodOption } from "@/lib/foods";
+import { prepareImageForUpload } from "@/lib/image-client";
 import { computeNutrition } from "@/lib/nutrition/compute";
 import {
   availableUnits,
@@ -314,8 +315,10 @@ export function SubmissionForm({
     setUploading(true);
     setUploadError(null);
     try {
+      // Shrink first: Vercel rejects request bodies over 4.5 MB.
+      const prepared = await prepareImageForUpload(file);
       const body = new FormData();
-      body.append("file", file);
+      body.append("file", prepared);
       const response = await fetch("/api/upload", { method: "POST", body });
       const data = (await response.json()) as {
         url?: string;
@@ -570,8 +573,8 @@ export function SubmissionForm({
                       {uploading ? "Processing photo…" : "Add a photo"}
                     </span>
                     <span className="max-w-xs text-[12px] leading-relaxed text-moss">
-                      Required. JPEG, PNG or WebP, up to 10 MB. We convert it
-                      to WebP, resize it and strip the location data before
+                      Required. JPEG, PNG or WebP. We shrink it to 1600 px,
+                      convert it to WebP and strip the location data before
                       publishing.
                     </span>
                   </button>

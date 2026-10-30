@@ -6,7 +6,11 @@ import sharp from "sharp";
 
 import { imageUrlFor, isOurImageUrl, putObject, r2Configured } from "@/lib/r2";
 
-/** Kept well under D1 row limits: only the URL is stored, never the bytes. */
+/**
+ * The browser already shrinks photos to stay under Vercel's 4.5 MB request
+ * limit; this ceiling covers anything that skips that step. Only the URL is
+ * stored in D1, never the bytes.
+ */
 const MAX_BYTES = 10 * 1024 * 1024;
 
 function looksLikeImage(buffer: Buffer): boolean {
