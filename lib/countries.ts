@@ -10,7 +10,7 @@ EC EE EG EH ER ES ET
 FI FJ FK FM FO FR
 GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY
 HK HM HN HR HT HU
-ID IE IL IM IN IO IQ IR IS IT
+ID IE IM IN IO IQ IR IS IT
 JE JM JO JP
 KE KG KH KI KM KN KP KR KW KY KZ
 LA LB LC LI LK LR LS LT LU LV LY
@@ -53,14 +53,19 @@ export function countryName(code: string): string {
   return name;
 }
 
+// Operator-configured compliance exclusions. 'IL' excluded per operator legal counsel for Bangladesh distribution. Keep this list minimal, verify with counsel in writing, and mirror it in Play Console availability. Excluding countries can trigger Play policy review. Never silently remap one country code to another.
+export const BLOCKED_COUNTRY_CODES = new Set<string>(['IL']);
+
 export function countries(): Country[] {
   if (cached) return cached;
-  cached = CODES.map((code) => ({ code, name: countryName(code) })).sort((a, b) =>
+  cached = CODES.filter((code) => !BLOCKED_COUNTRY_CODES.has(code)).map((code) => ({ code, name: countryName(code) })).sort((a, b) =>
     a.name.localeCompare(b.name),
   );
   return cached;
 }
 
 export function isValidCountryCode(code: string): boolean {
-  return CODES.includes(code.trim().toUpperCase());
+  const key = code.trim().toUpperCase();
+  if (BLOCKED_COUNTRY_CODES.has(key)) return false;
+  return CODES.includes(key);
 }
