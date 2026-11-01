@@ -10,6 +10,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/"), priority: 1, changeFrequency: "daily" },
     { url: absoluteUrl("/recipes"), priority: 0.9, changeFrequency: "daily" },
+    {
+      url: absoluteUrl("/leaderboards"),
+      priority: 0.6,
+      changeFrequency: "daily",
+    },
     { url: absoluteUrl("/submit"), priority: 0.7, changeFrequency: "monthly" },
     { url: absoluteUrl("/about"), priority: 0.5, changeFrequency: "yearly" },
     {
@@ -20,6 +25,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/terms"), priority: 0.3, changeFrequency: "yearly" },
     { url: absoluteUrl("/privacy"), priority: 0.3, changeFrequency: "yearly" },
     { url: absoluteUrl("/dmca"), priority: 0.3, changeFrequency: "yearly" },
+    {
+      url: absoluteUrl("/account-deletion"),
+      priority: 0.2,
+      changeFrequency: "yearly",
+    },
   ];
 
   const staticPages: MetadataRoute.Sitemap = entries.map((entry) => ({

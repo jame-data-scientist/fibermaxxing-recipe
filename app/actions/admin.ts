@@ -15,7 +15,11 @@ import {
   recipes,
 } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/admin";
-import { publishGate, recomputeRecipe } from "@/lib/nutrition/recompute";
+import {
+  publishGate,
+  recipePolicyProblems,
+  recomputeRecipe,
+} from "@/lib/nutrition/recompute";
 import { resolveGrams, type UnitId } from "@/lib/nutrition/units";
 import { reviewSchema } from "@/lib/validation";
 
@@ -99,6 +103,31 @@ export async function reviewRecipe(formData: FormData) {
       recipeId: id,
       reason: data.reviewNote || "Copyright review",
     });
+  }
+
+  if (data.action === "save") {
+    const [current] = await db
+      .select({ status: recipes.status })
+      .from(recipes)
+      .where(eq(recipes.id, id));
+
+    if (current?.status === "approved") {
+      const policyProblems = await recipePolicyProblems(id);
+      if (policyProblems.length) {
+        await db
+          .update(recipes)
+          .set({ status: "pending", reviewedAt: null })
+          .where(eq(recipes.id, id));
+        revalidateRecipe(existing.slug);
+        redirect(
+          `/admin/recipes/${id}?error=${encodeURIComponent(
+            `Pulled from the catalogue because it now contains pork or alcohol. ${policyProblems.join(
+              " · ",
+            )}`,
+          )}`,
+        );
+      }
+    }
   }
 
   if (data.action === "approve") {

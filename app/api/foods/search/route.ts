@@ -3,7 +3,7 @@ import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
 
 import { chunk } from "@/lib/chunks";
 import { db } from "@/lib/db";
-import { foodPortions, foods } from "@/lib/db/schema";
+import { foodNutrients, foodPortions, foods } from "@/lib/db/schema";
 import { usdaSearch, type LiveFood } from "@/lib/usda/client";
 
 export const runtime = "nodejs";
@@ -19,13 +19,15 @@ interface FoodResult {
   fiberG: number | null;
   sugarG: number | null;
   sodiumMg: number | null;
+  /** Canonical key -> per-100 g amount, or {} until the panel is seeded. */
+  nutrients: Record<string, number>;
   portions: { label: string; amount: number; unit: string; gramWeight: number }[];
 }
 
 /// USDA ships several records with the same description (different data types
 /// or revisions). Showing the same line twice in the picker reads as a bug, so
 /// only the best-ranked copy survives.
-function dedupeByDescription(rows: Omit<FoodResult, "portions">[]) {
+function dedupeByDescription(rows: Omit<FoodResult, "portions" | "nutrients">[]) {
   const seen = new Set<string>();
   return rows.filter((row) => {
     const key = row.description
@@ -39,19 +41,16 @@ function dedupeByDescription(rows: Omit<FoodResult, "portions">[]) {
 }
 
 async function withPortions(
-  allRows: Omit<FoodResult, "portions">[],
+  allRows: Omit<FoodResult, "portions" | "nutrients">[],
 ): Promise<FoodResult[]> {
   const rows = dedupeByDescription(allRows);
   if (!rows.length) return [];
-  const portions = await db
-    .select()
-    .from(foodPortions)
-    .where(
-      inArray(
-        foodPortions.fdcId,
-        rows.map((row) => row.fdcId),
-      ),
-    );
+  const ids = rows.map((row) => row.fdcId);
+
+  const [portions, panels] = await Promise.all([
+    db.select().from(foodPortions).where(inArray(foodPortions.fdcId, ids)),
+    db.select().from(foodNutrients).where(inArray(foodNutrients.fdcId, ids)),
+  ]);
 
   const byFood = new Map<string, FoodResult["portions"]>();
   for (const portion of portions) {
@@ -65,7 +64,24 @@ async function withPortions(
     byFood.set(portion.fdcId, list);
   }
 
-  return rows.map((row) => ({ ...row, portions: byFood.get(row.fdcId) ?? [] }));
+  const nutrientsByFood = new Map<string, Record<string, number>>();
+  for (const panel of panels) {
+    try {
+      const parsed = JSON.parse(panel.nutrients) as Record<string, number>;
+      if (parsed && typeof parsed === "object") {
+        nutrientsByFood.set(panel.fdcId, parsed);
+      }
+    } catch {
+      // A malformed panel must not take the search down; the food is still
+      // usable with its macro columns until the catalog is reseeded.
+    }
+  }
+
+  return rows.map((row) => ({
+    ...row,
+    nutrients: nutrientsByFood.get(row.fdcId) ?? {},
+    portions: byFood.get(row.fdcId) ?? [],
+  }));
 }
 
 const baseSelection = {
@@ -146,6 +162,21 @@ async function persistLive(rows: LiveFood[]) {
         source: "usda-live",
       })
       .onConflictDoNothing({ target: foods.fdcId });
+
+    // Never replace a seeded USDA panel with the live API's answer: the CSV
+    // build carries the complete set, the live response only what it returned.
+    const panel = await db
+      .select({ fdcId: foodNutrients.fdcId })
+      .from(foodNutrients)
+      .where(eq(foodNutrients.fdcId, food.fdcId))
+      .limit(1);
+    if (!panel.length && Object.keys(food.nutrients).length) {
+      await db.insert(foodNutrients).values({
+        fdcId: food.fdcId,
+        nutrients: JSON.stringify(food.nutrients),
+        source: "usda-live",
+      });
+    }
 
     if (food.portions.length) {
       const existing = await db

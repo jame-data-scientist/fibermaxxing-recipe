@@ -9,10 +9,22 @@
  * portions) fill the rest of the catalog.
  */
 
-import { createReadStream, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import {
+  createReadStream,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { createInterface } from "node:readline";
 import { dirname, join, resolve } from "node:path";
 
+import {
+  buildNutrientPanel,
+  defaultNutrientDef,
+  type NutrientDef,
+  type UsdaNutrientMeta,
+} from "../lib/nutrition/nutrients";
 import { parsePortionUnit, type UnitId } from "../lib/nutrition/units";
 
 const ROOT = resolve(import.meta.dirname, "..", "..");
@@ -22,6 +34,8 @@ const FOUNDATION = join(
   "data/usda/FoodData_Central_foundation_food_csv_2025-12-18",
 );
 const OUT = resolve(import.meta.dirname, "..", "seed", "foods.json");
+const DEFS_OUT = resolve(import.meta.dirname, "..", "seed", "nutrients.json");
+const SUPPLEMENTS = resolve(import.meta.dirname, "..", "seed", "supplements.json");
 
 const TARGET = 1400;
 
@@ -107,21 +121,50 @@ function normalise(text: string): string {
     .trim();
 }
 
+/**
+ * Whole-token matching. `includes("mature seeds")` also matches "immature
+ * seeds", which quietly put immature black-eyed peas in the catalog when the
+ * curated entry asked for the mature ones.
+ */
+function hasAllTokens(text: string, tokens: string[]): boolean {
+  const padded = ` ${text} `;
+  return tokens.every((token) => padded.includes(` ${token} `));
+}
+
 interface FoodRow {
   fdcId: string;
   description: string;
   category: string;
   dataType: string;
+  /** The handful of macros the catalog has always stored as columns. */
   nutrients: Record<string, number>;
+  /** Every nutrient in the USDA CSV, keyed by nutrient id. */
+  rawNutrients: Map<string, number>;
+  /** Canonical key -> amount, filled for the foods that make the catalog. */
+  panel?: Record<string, number>;
   portions: { label: string; amount: number; unit: UnitId; gramWeight: number }[];
   commonName?: string;
+  aliases?: string[];
+  source?: string;
+}
+
+interface SupplementFood {
+  fdcId: string;
+  description: string;
+  commonName?: string;
+  aliases?: string[];
+  category: string;
+  dataType: string;
+  source: string;
+  nutrients: Record<string, number>;
+  portions: { label: string; amount: number; unit: UnitId; gramWeight: number }[];
 }
 
 /* -------------------------------------------------------------------------- */
 /*  Curated common ingredients                                                */
 /* -------------------------------------------------------------------------- */
 
-const CURATED: { name: string; tokens: string[] }[] = [
+const CURATED: { name: string; tokens: string[]; aliases?: string[] }[] = [
   { name: "chicken breast", tokens: ["chicken", "breast", "meat only", "cooked", "roasted"] },
   { name: "chicken breast raw", tokens: ["chicken", "breast", "meat only", "raw"] },
   { name: "chicken thigh", tokens: ["chicken", "thigh", "meat only", "cooked"] },
@@ -132,6 +175,11 @@ const CURATED: { name: string; tokens: string[] }[] = [
   { name: "beef steak", tokens: ["beef", "steak", "cooked"] },
   { name: "pork chop", tokens: ["pork", "loin", "chops", "cooked", "broiled"] },
   { name: "bacon", tokens: ["pork", "cured", "bacon", "cooked"] },
+  {
+    name: "horse meat",
+    tokens: ["game meat", "horse", "raw"],
+    aliases: ["horse", "horsemeat"],
+  },
   { name: "salmon", tokens: ["salmon", "cooked", "dry heat"] },
   { name: "salmon raw", tokens: ["salmon", "atlantic", "farmed", "raw"] },
   { name: "canned tuna", tokens: ["tuna", "light", "canned", "water"] },
@@ -175,12 +223,98 @@ const CURATED: { name: string; tokens: string[] }[] = [
   { name: "tortilla", tokens: ["tortillas", "flour", "shelf stable"] },
   { name: "corn tortilla", tokens: ["tortillas", "corn"] },
   { name: "lentils", tokens: ["lentils", "raw"] },
+  {
+    name: "brown lentils",
+    tokens: ["lentils", "raw"],
+    aliases: ["brown lentils", "green lentils", "whole lentils"],
+  },
+  {
+    name: "red lentils",
+    tokens: ["lentils", "pink or red", "raw"],
+    aliases: ["red lentils", "pink lentils", "split red lentils"],
+  },
   { name: "cooked lentils", tokens: ["lentils", "cooked", "boiled"] },
+  {
+    name: "split peas",
+    tokens: ["peas", "split", "mature seeds", "cooked"],
+    aliases: ["yellow split peas", "green split peas"],
+  },
   { name: "chickpeas", tokens: ["chickpeas", "canned", "drained"] },
+  {
+    name: "chickpeas dry",
+    tokens: ["chickpeas", "mature seeds", "raw"],
+    aliases: ["dried chickpeas", "garbanzo beans"],
+  },
   { name: "black beans", tokens: ["beans", "black", "canned"] },
+  {
+    name: "black beans dry",
+    tokens: ["beans", "black", "mature seeds", "raw"],
+    aliases: ["dried black beans"],
+  },
   { name: "kidney beans", tokens: ["beans", "kidney", "canned"] },
   { name: "pinto beans", tokens: ["beans", "pinto", "canned"] },
   { name: "white beans", tokens: ["beans", "white", "canned"] },
+  {
+    name: "cannellini beans",
+    tokens: ["beans", "white", "mature seeds", "raw"],
+    aliases: ["cannellini", "white kidney beans"],
+  },
+  {
+    name: "navy beans",
+    tokens: ["beans", "navy", "mature seeds", "raw"],
+    aliases: ["haricot beans"],
+  },
+  {
+    name: "great northern beans",
+    tokens: ["beans", "great northern", "raw"],
+  },
+  {
+    name: "pink beans",
+    tokens: ["beans", "pink", "mature seeds", "raw"],
+  },
+  {
+    name: "cranberry beans",
+    tokens: ["beans", "cranberry", "raw"],
+    aliases: ["roman beans", "borlotti beans"],
+  },
+  {
+    name: "small white beans",
+    tokens: ["beans", "small white", "raw"],
+  },
+  {
+    name: "yellow beans",
+    tokens: ["beans", "yellow", "mature seeds", "raw"],
+  },
+  {
+    name: "adzuki beans",
+    tokens: ["beans", "adzuki", "raw"],
+    aliases: ["azuki beans", "aduki beans"],
+  },
+  {
+    name: "lima beans",
+    tokens: ["lima beans", "raw"],
+    aliases: ["butter beans"],
+  },
+  {
+    name: "mung beans",
+    tokens: ["mung beans", "mature seeds", "raw"],
+    aliases: ["moong beans", "green gram"],
+  },
+  {
+    name: "fava beans",
+    tokens: ["broadbeans", "fava", "mature seeds", "raw"],
+    aliases: ["broad beans", "faba beans"],
+  },
+  {
+    name: "black-eyed peas",
+    tokens: ["cowpeas", "blackeyes", "mature seeds", "raw"],
+    aliases: ["black eyed peas", "cowpeas"],
+  },
+  {
+    name: "soybeans",
+    tokens: ["soybeans", "mature seeds", "raw"],
+    aliases: ["soya beans", "edamame beans"],
+  },
   { name: "edamame", tokens: ["edamame", "frozen"] },
   { name: "tofu", tokens: ["tofu", "firm", "prepared"] },
   { name: "tempeh", tokens: ["tempeh"] },
@@ -254,7 +388,7 @@ const CURATED: { name: string; tokens: string[] }[] = [
   { name: "whey protein", tokens: ["whey", "protein", "powder"] },
   { name: "sour cream", tokens: ["cream", "sour", "cultured"] },
   { name: "heavy cream", tokens: ["cream", "heavy", "whipping"] },
-  { name: "barley", tokens: ["barley", "pearl", "raw"] },
+  { name: "barley", tokens: ["barley", "pearled", "raw"] },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -291,11 +425,23 @@ async function loadFoods(): Promise<Map<string, FoodRow>> {
         category,
         dataType,
         nutrients: {},
+        rawNutrients: new Map(),
         portions: [],
       });
     });
   }
   return foods;
+}
+
+async function loadNutrientMeta(): Promise<Map<string, UsdaNutrientMeta>> {
+  const meta = new Map<string, UsdaNutrientMeta>();
+  for (const dir of [SR, FOUNDATION]) {
+    await forEachRow(join(dir, "nutrient.csv"), (r) => {
+      if (!r.id || meta.has(r.id)) return;
+      meta.set(r.id, { name: r.name, unit: r.unit_name ?? "" });
+    });
+  }
+  return meta;
 }
 
 async function loadNutrients(foods: Map<string, FoodRow>) {
@@ -305,6 +451,11 @@ async function loadNutrients(foods: Map<string, FoodRow>) {
       if (!food) return;
       const amount = Number(r.amount);
       if (!Number.isFinite(amount)) return;
+      // Keep the first published amount per id; later rows are usually the
+      // same nutrient from another derivation/source.
+      if (!food.rawNutrients.has(r.nutrient_id)) {
+        food.rawNutrients.set(r.nutrient_id, amount);
+      }
       for (const [key, ids] of Object.entries(NUTRIENTS)) {
         if (!ids.includes(r.nutrient_id)) continue;
         // Later ids in the list are fallbacks; keep the first value seen for
@@ -413,6 +564,36 @@ function score(food: FoodRow): number {
   return value;
 }
 
+function loadSupplements(): SupplementFood[] {
+  if (!existsSync(SUPPLEMENTS)) return [];
+  return JSON.parse(readFileSync(SUPPLEMENTS, "utf8")) as SupplementFood[];
+}
+
+function supplementRow(supp: SupplementFood): FoodRow {
+  const panel = supp.nutrients;
+  return {
+    fdcId: supp.fdcId,
+    description: supp.description,
+    commonName: supp.commonName,
+    aliases: supp.aliases,
+    category: supp.category,
+    dataType: supp.dataType,
+    source: supp.source,
+    nutrients: {
+      kcal: panel.kcal,
+      protein: panel.protein_g,
+      carbs: panel.carbs_g,
+      fat: panel.fat_g,
+      fiber: panel.fiber_g,
+      sugar: panel.sugars_g,
+      sodium: panel.sodium_mg,
+    },
+    rawNutrients: new Map(),
+    panel,
+    portions: supp.portions,
+  };
+}
+
 function main() {
   console.log("Reading USDA FoodData Central CSVs…");
   const started = Date.now();
@@ -422,9 +603,12 @@ function main() {
     const loaded = await loadFoods();
     for (const [k, v] of loaded) foods.set(k, v);
     console.log(`  foods: ${foods.size}`);
+    const nutrientMeta = await loadNutrientMeta();
     await loadNutrients(foods);
     await loadPortions(foods);
-    console.log(`  parsed in ${((Date.now() - started) / 1000).toFixed(1)}s`);
+    console.log(
+      `  parsed in ${((Date.now() - started) / 1000).toFixed(1)}s (${nutrientMeta.size} nutrient definitions)`,
+    );
 
     const usable = [...foods.values()].filter(hasMacros);
     console.log(`  with complete macros: ${usable.length}`);
@@ -432,6 +616,7 @@ function main() {
     // Curated matches always make the cut and get a short display name.
     const byId = new Map(usable.map((f) => [f.fdcId, f]));
     const curatedIds = new Set<string>();
+    const aliasesById = new Map<string, Set<string>>();
     const missing: string[] = [];
 
     for (const entry of CURATED) {
@@ -439,7 +624,7 @@ function main() {
       let bestScore = Number.POSITIVE_INFINITY;
       for (const food of usable) {
         const text = normalise(food.description);
-        if (!entry.tokens.every((token) => text.includes(token))) continue;
+        if (!hasAllTokens(text, entry.tokens)) continue;
         const candidate =
           commaCount(food.description) * 10 +
           food.description.length / 40 +
@@ -458,6 +643,13 @@ function main() {
       }
       if (!best.commonName) best.commonName = entry.name;
       curatedIds.add(best.fdcId);
+
+      // Several curated names can share one USDA row (brown/green lentils).
+      // Keep every alias in searchText so each name still finds it.
+      const aliases = aliasesById.get(best.fdcId) ?? new Set<string>();
+      aliases.add(entry.name);
+      for (const alias of entry.aliases ?? []) aliases.add(alias);
+      aliasesById.set(best.fdcId, aliases);
     }
 
     if (missing.length) {
@@ -475,47 +667,103 @@ function main() {
     }
     for (const food of selected) final.set(food.fdcId, food);
 
+    // Foods USDA does not carry (psyllium husk, kangaroo) are hand-curated
+    // with their source recorded, so they sit beside the USDA rows.
+    const supplements = loadSupplements();
+    for (const supp of supplements) {
+      if (final.has(supp.fdcId)) {
+        console.warn(`  supplement ${supp.fdcId} collides with a USDA row`);
+        continue;
+      }
+      final.set(supp.fdcId, supplementRow(supp));
+    }
+
     const rows = [...final.values()].sort((a, b) => {
       if (a.commonName && !b.commonName) return -1;
       if (!a.commonName && b.commonName) return 1;
       return score(b) - score(a) || a.fdcId.localeCompare(b.fdcId);
     });
 
+    // Build the full per-100 g panel for every food that made the catalog.
+    const defs: Record<string, NutrientDef> = {};
+    for (const food of rows) {
+      if (!food.panel) {
+        const panel = buildNutrientPanel(food.rawNutrients, nutrientMeta);
+        food.panel = panel.values;
+        for (const [key, def] of Object.entries(panel.defs)) defs[key] = def;
+      }
+      for (const key of Object.keys(food.panel)) {
+        defs[key] ??= defaultNutrientDef(key);
+      }
+    }
+
     const payload = {
       generatedAt: new Date().toISOString(),
       source: "USDA FoodData Central (Foundation 2025-12-18 + SR Legacy 2018-04)",
       count: rows.length,
-      foods: rows.map((food) => ({
-        fdcId: food.fdcId,
-        description: food.description,
-        commonName: food.commonName ?? null,
-        category: food.category || null,
-        dataType: food.dataType,
-        kcal: food.nutrients.kcal ?? null,
-        proteinG: food.nutrients.protein ?? null,
-        carbsG: food.nutrients.carbs ?? null,
-        fatG: food.nutrients.fat ?? null,
-        fiberG: food.nutrients.fiber ?? null,
-        sugarG: food.nutrients.sugar ?? null,
-        sodiumMg: food.nutrients.sodium ?? null,
-        searchText: normalise(`${food.description} ${food.commonName ?? ""}`),
-        portions: food.portions.slice(0, 8).map((p) => ({
-          label: p.label,
-          amount: p.amount,
-          unit: p.unit,
-          gramWeight: p.gramWeight,
-        })),
-      })),
+      foods: rows.map((food) => {
+        const panel = food.panel ?? {};
+        const aliases = [...(aliasesById.get(food.fdcId) ?? [])];
+        for (const alias of food.aliases ?? []) {
+          if (!aliases.includes(alias)) aliases.push(alias);
+        }
+        return {
+          fdcId: food.fdcId,
+          description: food.description,
+          commonName: food.commonName ?? null,
+          category: food.category || null,
+          dataType: food.dataType,
+          source: food.source ?? "usda",
+          kcal: panel.kcal ?? null,
+          proteinG: panel.protein_g ?? null,
+          carbsG: panel.carbs_g ?? null,
+          fatG: panel.fat_g ?? null,
+          fiberG: panel.fiber_g ?? null,
+          sugarG: panel.sugars_g ?? null,
+          sodiumMg: panel.sodium_mg ?? null,
+          nutrients: panel,
+          searchText: normalise(
+            [food.description, food.commonName, ...aliases]
+              .filter(Boolean)
+              .join(" "),
+          ),
+          portions: food.portions.slice(0, 8).map((p) => ({
+            label: p.label,
+            amount: p.amount,
+            unit: p.unit,
+            gramWeight: p.gramWeight,
+          })),
+        };
+      }),
+    };
+
+    const defsPayload = {
+      generatedAt: payload.generatedAt,
+      source: payload.source,
+      count: Object.keys(defs).length,
+      nutrients: Object.fromEntries(
+        Object.entries(defs).sort(([a], [b]) => a.localeCompare(b)),
+      ),
     };
 
     mkdirSync(dirname(OUT), { recursive: true });
     writeFileSync(OUT, JSON.stringify(payload), "utf8");
+    writeFileSync(DEFS_OUT, JSON.stringify(defsPayload, null, 2), "utf8");
 
     const withPortions = payload.foods.filter((f) => f.portions.length > 0).length;
     const curated = payload.foods.filter((f) => f.commonName).length;
-    console.log(
-      `\nWrote ${payload.count} foods (${curated} curated, ${withPortions} with household portions)\n  -> ${OUT}`,
+    const supplementsUsed = payload.foods.filter((f) => f.source !== "usda").length;
+    const values = payload.foods.reduce(
+      (total, food) => total + Object.keys(food.nutrients).length,
+      0,
     );
+    console.log(
+      `\nWrote ${payload.count} foods (${curated} curated, ${supplementsUsed} supplemental, ${withPortions} with household portions)`,
+    );
+    console.log(
+      `  ${defsPayload.count} distinct nutrients, ${values} stored values (${(values / payload.count).toFixed(1)} per food)`,
+    );
+    console.log(`  -> ${OUT}\n  -> ${DEFS_OUT}`);
   })();
 }
 

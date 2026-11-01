@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const AGENT_EMAIL =
-  process.env.DMCA_AGENT_EMAIL ?? "copyright@fibermaxxing.com";
+  process.env.DMCA_AGENT_EMAIL ?? "slothdevwork@gmail.com";
 
 export default async function DmcaPage({
   searchParams,

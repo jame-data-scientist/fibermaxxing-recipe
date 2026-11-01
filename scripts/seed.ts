@@ -14,7 +14,7 @@ config({ path: ".env" });
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import { inArray, sql } from "drizzle-orm";
+import { eq, inArray, isNull, sql } from "drizzle-orm";
 
 import { computeNutrition, deriveNutritionTags } from "../lib/nutrition/compute";
 import { resolveGrams, unitLabel, type UnitId } from "../lib/nutrition/units";
@@ -33,6 +33,11 @@ const D1_MAX_PARAMS = 100;
 
 function batch<T>(rows: T[], paramsPerRow: number): T[][] {
   const size = Math.max(1, Math.floor(D1_MAX_PARAMS / paramsPerRow));
+  return chunkRows(rows, size);
+}
+
+/** Fixed row count, for rows whose bound JSON can get large. */
+function chunkRows<T>(rows: T[], size: number): T[][] {
   const batches: T[][] = [];
   for (let i = 0; i < rows.length; i += size) {
     batches.push(rows.slice(i, i + size));
@@ -53,6 +58,9 @@ interface SeedFood {
   fiberG: number | null;
   sugarG: number | null;
   sodiumMg: number | null;
+  source?: string;
+  /** Canonical nutrient key -> per-100 g amount (lib/nutrition/nutrients.ts). */
+  nutrients?: Record<string, number>;
   searchText: string;
   portions: {
     label: string;
@@ -65,7 +73,7 @@ interface SeedFood {
 async function main() {
   const { db } = await import("../lib/db");
   const schema = await import("../lib/db/schema");
-  const { foods, foodPortions, recipes } = schema;
+  const { foods, foodPortions, foodNutrients, recipes } = schema;
 
   const payload = JSON.parse(readFileSync(SEED_PATH, "utf8")) as {
     count: number;
@@ -73,8 +81,8 @@ async function main() {
   };
   console.log(`Seeding ${payload.foods.length} USDA foods…`);
 
-  // foods binds 15 parameters per row (created_at is a SQL default expression).
-  const chunks = batch(payload.foods, 15);
+  // foods binds 16 parameters per row (created_at is a SQL default expression).
+  const chunks = batch(payload.foods, 16);
 
   for (const [index, chunk] of chunks.entries()) {
     if (index % 40 === 0) {
@@ -98,6 +106,7 @@ async function main() {
           fiberG: f.fiberG,
           sugarG: f.sugarG,
           sodiumMg: f.sodiumMg,
+          source: f.source ?? "usda",
           searchText: f.searchText,
         })),
       )
@@ -115,9 +124,33 @@ async function main() {
           fiberG: sql`excluded.fiber_g`,
           sugarG: sql`excluded.sugar_g`,
           sodiumMg: sql`excluded.sodium_mg`,
+          source: sql`excluded.source`,
           searchText: sql`excluded.search_text`,
         },
       });
+
+    // One panel row per food: ~150 numbers in a single JSON column, so the
+    // insert stays well under D1's 100-bound-parameter limit.
+    const panels = chunk.map((f) => ({
+      fdcId: f.fdcId,
+      nutrients: JSON.stringify(f.nutrients ?? {}),
+      source: f.source ?? "usda",
+    }));
+    // Ten panels per statement: ~150 numbers each keeps a batch well under
+    // D1's per-statement size limit while still fitting the parameter cap.
+    for (const slice of chunkRows(panels, 10)) {
+      await db
+        .insert(foodNutrients)
+        .values(slice)
+        .onConflictDoUpdate({
+          target: foodNutrients.fdcId,
+          set: {
+            nutrients: sql`excluded.nutrients`,
+            source: sql`excluded.source`,
+            updatedAt: sql`(unixepoch() * 1000)`,
+          },
+        });
+    }
 
     const ids = chunk.map((f) => f.fdcId);
     await db.delete(foodPortions).where(inArray(foodPortions.fdcId, ids));
@@ -134,6 +167,52 @@ async function main() {
     for (const slice of batch(portions, 5)) {
       await db.insert(foodPortions).values(slice);
     }
+  }
+
+  // Rows that predate the panel table (or came from an older live lookup)
+  // would otherwise be the only foods without nutrients. Give them the seven
+  // macro values the catalog already stores; the next reseed replaces this
+  // with the full panel if the food is still selected.
+  const missingPanels = await db
+    .select({
+      fdcId: foods.fdcId,
+      kcal: foods.kcal,
+      proteinG: foods.proteinG,
+      carbsG: foods.carbsG,
+      fatG: foods.fatG,
+      fiberG: foods.fiberG,
+      sugarG: foods.sugarG,
+      sodiumMg: foods.sodiumMg,
+    })
+    .from(foods)
+    .leftJoin(foodNutrients, eq(foodNutrients.fdcId, foods.fdcId))
+    .where(isNull(foodNutrients.fdcId));
+
+  if (missingPanels.length) {
+    const backfill = missingPanels.map((row) => {
+      const panel: Record<string, number> = {};
+      const values = {
+        kcal: row.kcal,
+        protein_g: row.proteinG,
+        carbs_g: row.carbsG,
+        fat_g: row.fatG,
+        fiber_g: row.fiberG,
+        sugars_g: row.sugarG,
+        sodium_mg: row.sodiumMg,
+      };
+      for (const [key, value] of Object.entries(values)) {
+        if (value != null) panel[key] = value;
+      }
+      return {
+        fdcId: row.fdcId,
+        nutrients: JSON.stringify(panel),
+        source: "macro-backfill",
+      };
+    });
+    for (const slice of chunkRows(backfill, 10)) {
+      await db.insert(foodNutrients).values(slice);
+    }
+    console.log(`  backfilled ${backfill.length} legacy food(s) from macro columns`);
   }
 
   const allFoods = await db.select().from(foods);

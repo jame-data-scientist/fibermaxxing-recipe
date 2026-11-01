@@ -89,7 +89,7 @@ export default async function StatusPage({
           <p className="display text-xl">{recipe.title}</p>
           <p className="mt-1 text-[11px] text-moss">
             Submitted {formatDate(recipe.submittedAt)}
-            {recipe.publishedAt
+            {recipe.status === "approved" && recipe.publishedAt
               ? ` · Published ${formatDate(recipe.publishedAt)}`
               : ""}
           </p>

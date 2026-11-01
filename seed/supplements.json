@@ -1,0 +1,49 @@
+[
+  {
+    "fdcId": "supp-psyllium-husk",
+    "description": "Psyllium husk, raw",
+    "commonName": "psyllium husk",
+    "aliases": ["psyllium", "psyllium seed husks", "ispaghula"],
+    "category": "Nut and Seed Products",
+    "dataType": "supplemental",
+    "source": "matvaretabellen.no/psyllium-husk",
+    "nutrients": {
+      "kcal": 200,
+      "protein_g": 1.2,
+      "fat_g": 0.5,
+      "carbs_g": 88,
+      "fiber_g": 78
+    },
+    "portions": [
+      { "label": "1 tbsp", "amount": 1, "unit": "tbsp", "gramWeight": 5 },
+      { "label": "1 tsp", "amount": 1, "unit": "tsp", "gramWeight": 1.7 }
+    ]
+  },
+  {
+    "fdcId": "supp-kangaroo-fillet",
+    "description": "Kangaroo, fillet, raw",
+    "commonName": "kangaroo",
+    "aliases": ["kangaroo meat", "kangaroo fillet"],
+    "category": "Game Meat",
+    "dataType": "supplemental",
+    "source": "k-roo.com.au/nutrition",
+    "nutrients": {
+      "kcal": 99,
+      "energy_kj": 414,
+      "protein_g": 22,
+      "fat_g": 1,
+      "fat_saturated_g": 0.4,
+      "fat_mufa_g": 0.2,
+      "fat_pufa_g": 0.4,
+      "fat_trans_g": 0.1,
+      "carbs_g": 0,
+      "fiber_g": 0,
+      "sugars_g": 0,
+      "sodium_mg": 40,
+      "iron_mg": 2.5
+    },
+    "portions": [
+      { "label": "1 fillet", "amount": 1, "unit": "piece", "gramWeight": 150 }
+    ]
+  }
+]

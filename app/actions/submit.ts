@@ -15,6 +15,10 @@ import {
   recipes,
 } from "@/lib/db/schema";
 import { chunk } from "@/lib/chunks";
+import {
+  findRestrictedContent,
+  restrictedSubmissionMessage,
+} from "@/lib/content/restricted";
 import { countryName, isValidCountryCode } from "@/lib/countries";
 import { computeNutrition, deriveNutritionTags } from "@/lib/nutrition/compute";
 import { resolveGrams, type UnitId } from "@/lib/nutrition/units";
@@ -132,6 +136,26 @@ export async function submitRecipe(
       message: `We can't convert ${unresolved.ingredient.amount} ${unresolved.ingredient.unit} of ${
         unresolved.food.commonName ?? unresolved.food.description
       }. Choose a different unit for that ingredient.`,
+    };
+  }
+
+  const restrictedHits = findRestrictedContent({
+    title: data.title,
+    summary: data.summary,
+    tips: data.tips,
+    ingredients: resolved.map((row) => ({
+      text: [row.food.commonName, row.food.description]
+        .filter(Boolean)
+        .join(" "),
+      note: row.ingredient.note,
+    })),
+    steps: data.steps,
+  });
+
+  if (restrictedHits.length) {
+    return {
+      ok: false,
+      message: restrictedSubmissionMessage(restrictedHits),
     };
   }
 

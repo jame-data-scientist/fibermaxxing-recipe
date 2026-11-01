@@ -3,6 +3,7 @@ import { and, asc, desc, eq, isNull, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   dmcaNotices,
+  foodNutrients,
   foods,
   infringementStrikes,
   recipeIngredients,
@@ -12,6 +13,7 @@ import {
   recipeTags,
   recipes,
 } from "@/lib/db/schema";
+import { parsePanel } from "@/lib/nutrition/panel";
 import { publishGate } from "@/lib/nutrition/recompute";
 
 export async function adminCounts() {
@@ -92,9 +94,14 @@ export async function adminRecipe(id: string) {
         foodDescription: foods.description,
         fiberG: foods.fiberG,
         proteinG: foods.proteinG,
+        panelJson: foodNutrients.nutrients,
       })
       .from(recipeIngredients)
       .leftJoin(foods, eq(foods.fdcId, recipeIngredients.foodFdcId))
+      .leftJoin(
+        foodNutrients,
+        eq(foodNutrients.fdcId, recipeIngredients.foodFdcId),
+      )
       .where(eq(recipeIngredients.recipeId, id))
       .orderBy(recipeIngredients.position),
     db
@@ -123,7 +130,10 @@ export async function adminRecipe(id: string) {
 
   return {
     recipe,
-    ingredients,
+    ingredients: ingredients.map(({ panelJson, ...ingredient }) => ({
+      ...ingredient,
+      nutrients: parsePanel(panelJson),
+    })),
     steps: steps.map((row) => row.text),
     tags: tags.map((row) => row.tag),
     nutrition: nutrition[0] ?? null,

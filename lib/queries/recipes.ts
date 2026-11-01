@@ -2,6 +2,7 @@ import { and, desc, eq, inArray, ne, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import {
+  foodNutrients,
   foods,
   recipeIngredients,
   recipeNutrition,
@@ -9,6 +10,7 @@ import {
   recipeTags,
   recipes,
 } from "@/lib/db/schema";
+import { parsePanel } from "@/lib/nutrition/panel";
 import { PAGE_SIZE } from "@/lib/site";
 
 export interface RecipeListItem {
@@ -222,6 +224,65 @@ export async function recipeCountries() {
   return rows;
 }
 
+export interface CountryStanding {
+  code: string;
+  name: string;
+  count: number;
+}
+
+/** Countries ranked by published recipes; ties fall back to the name so the
+ * order is stable between requests. */
+export async function countryStandings(
+  limit = 10,
+): Promise<CountryStanding[]> {
+  return db
+    .select({
+      code: recipes.authorCountryCode,
+      name: recipes.authorCountryName,
+      count: sql<number>`count(*)`,
+    })
+    .from(recipes)
+    .where(eq(recipes.status, "approved"))
+    .groupBy(recipes.authorCountryCode, recipes.authorCountryName)
+    .orderBy(desc(sql`count(*)`), recipes.authorCountryName)
+    .limit(limit);
+}
+
+export type LeaderboardMetric = "fiber" | "protein" | "both";
+
+/**
+ * The three recipe boards. "both" only admits recipes that already earn the
+ * two badges (8 g fibre and 25 g protein per serving), then orders by their
+ * combined grams — otherwise it would just be the protein board again.
+ */
+export async function recipeLeaderboard(
+  metric: LeaderboardMetric,
+  limit = 8,
+): Promise<RecipeListItem[]> {
+  const conditions = [eq(recipes.status, "approved")];
+  if (metric === "both") {
+    conditions.push(sql`${recipeNutrition.fiberG} >= 8`);
+    conditions.push(sql`${recipeNutrition.proteinG} >= 25`);
+  }
+
+  const score =
+    metric === "fiber"
+      ? recipeNutrition.fiberG
+      : metric === "protein"
+        ? recipeNutrition.proteinG
+        : sql<number>`${recipeNutrition.fiberG} + ${recipeNutrition.proteinG}`;
+
+  const rows = await db
+    .select(listSelection)
+    .from(recipes)
+    .innerJoin(recipeNutrition, eq(recipeNutrition.recipeId, recipes.id))
+    .where(and(...conditions))
+    .orderBy(desc(score), desc(recipes.publishedAt))
+    .limit(limit);
+
+  return (await withTags(rows)) as RecipeListItem[];
+}
+
 export interface FullIngredient {
   id: string;
   position: number;
@@ -233,6 +294,8 @@ export interface FullIngredient {
   mappingStatus: string;
   foodName: string | null;
   foodDescription: string | null;
+  /** The full stored per-100 g panel for the matched food, if any. */
+  nutrients: Record<string, number> | null;
   /** Grams in one measured cup of this food, when USDA publishes it. */
   cupGrams: number | null;
 }
@@ -270,6 +333,7 @@ export async function getRecipeBySlug(slug: string) {
         mappingStatus: recipeIngredients.mappingStatus,
         foodName: foods.commonName,
         foodDescription: foods.description,
+        panelJson: foodNutrients.nutrients,
         cupGrams: sql<number | null>`(
           select p.gram_weight from food_portions p
           where p.fdc_id = ${recipeIngredients.foodFdcId}
@@ -280,6 +344,10 @@ export async function getRecipeBySlug(slug: string) {
       })
       .from(recipeIngredients)
       .leftJoin(foods, eq(foods.fdcId, recipeIngredients.foodFdcId))
+      .leftJoin(
+        foodNutrients,
+        eq(foodNutrients.fdcId, recipeIngredients.foodFdcId),
+      )
       .where(eq(recipeIngredients.recipeId, recipe.id))
       .orderBy(recipeIngredients.position),
     db
@@ -293,7 +361,10 @@ export async function getRecipeBySlug(slug: string) {
 
   return {
     ...withTagList,
-    ingredients: ingredients as FullIngredient[],
+    ingredients: ingredients.map(({ panelJson, ...ingredient }) => ({
+      ...ingredient,
+      nutrients: parsePanel(panelJson),
+    })) as FullIngredient[],
     steps: steps.map((s) => s.text),
   };
 }

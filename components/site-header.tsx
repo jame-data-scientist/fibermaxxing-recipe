@@ -4,8 +4,9 @@ import { Wordmark } from "@/components/brand";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const links = [
+const links: { href: string; label: string; shortLabel?: string }[] = [
   { href: "/recipes", label: "Recipes" },
+  { href: "/leaderboards", label: "Leaderboards", shortLabel: "Leaders" },
   { href: "/about", label: "About" },
 ];
 
@@ -24,7 +25,8 @@ export function SiteHeader() {
                 link.href === "/about" && "hidden sm:inline-block",
               )}
             >
-              {link.label}
+              <span className="sm:hidden">{link.shortLabel ?? link.label}</span>
+              <span className="hidden sm:inline">{link.label}</span>
             </Link>
           ))}
           <Link

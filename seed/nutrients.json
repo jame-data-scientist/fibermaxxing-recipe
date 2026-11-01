@@ -1,0 +1,1157 @@
+{
+  "generatedAt": "2026-10-30T13:29:41.529Z",
+  "source": "USDA FoodData Central (Foundation 2025-12-18 + SR Legacy 2018-04)",
+  "count": 230,
+  "nutrients": {
+    "10_formyl_folic_acid_10hcofa_mcg": {
+      "label": "10-Formyl folic acid (10HCOFA)",
+      "unit": "mcg",
+      "usdaId": "1191"
+    },
+    "25_hydroxycholecalciferol_mcg": {
+      "label": "25-hydroxycholecalciferol",
+      "unit": "mcg",
+      "usdaId": "1113"
+    },
+    "5_formyltetrahydrofolic_acid_5_hcoh4_mcg": {
+      "label": "5-Formyltetrahydrofolic acid (5-HCOH4",
+      "unit": "mcg",
+      "usdaId": "1192"
+    },
+    "5_methyl_tetrahydrofolate_5_mthf_mcg": {
+      "label": "5-methyl tetrahydrofolate (5-MTHF)",
+      "unit": "mcg",
+      "usdaId": "1188"
+    },
+    "aa_g": {
+      "label": "AA (arachidonic)",
+      "unit": "g",
+      "usdaId": "1271"
+    },
+    "ala_g": {
+      "label": "ALA (alpha-linolenic)",
+      "unit": "g",
+      "usdaId": "1404"
+    },
+    "alanine_mg": {
+      "label": "Alanine",
+      "unit": "mg",
+      "usdaId": "1222"
+    },
+    "alcohol_g": {
+      "label": "Alcohol, ethyl",
+      "unit": "g",
+      "usdaId": "1018"
+    },
+    "alpha_carotene_mcg": {
+      "label": "Carotene, alpha",
+      "unit": "mcg",
+      "usdaId": "1108"
+    },
+    "arginine_mg": {
+      "label": "Arginine",
+      "unit": "mg",
+      "usdaId": "1220"
+    },
+    "aspartic_acid_mg": {
+      "label": "Aspartic acid",
+      "unit": "mg",
+      "usdaId": "1223"
+    },
+    "beta_carotene_mcg": {
+      "label": "Carotene, beta",
+      "unit": "mcg",
+      "usdaId": "1107"
+    },
+    "beta_cryptoxanthin_mcg": {
+      "label": "Cryptoxanthin, beta",
+      "unit": "mcg",
+      "usdaId": "1120"
+    },
+    "beta_glucan_g": {
+      "label": "Beta-glucan",
+      "unit": "g",
+      "usdaId": "2058"
+    },
+    "beta_sitostanol_mg": {
+      "label": "Beta-sitostanol",
+      "unit": "mg",
+      "usdaId": "1294"
+    },
+    "beta_sitosterol_mg": {
+      "label": "Beta-sitosterol",
+      "unit": "mg",
+      "usdaId": "1288"
+    },
+    "betaine_mg": {
+      "label": "Betaine",
+      "unit": "mg",
+      "usdaId": "1198"
+    },
+    "biotin_mcg": {
+      "label": "Biotin",
+      "unit": "mcg",
+      "usdaId": "1176"
+    },
+    "caffeine_mg": {
+      "label": "Caffeine",
+      "unit": "mg",
+      "usdaId": "1057"
+    },
+    "calcium_mg": {
+      "label": "Calcium, Ca",
+      "unit": "mg",
+      "usdaId": "1087"
+    },
+    "campesterol_mg": {
+      "label": "Campesterol",
+      "unit": "mg",
+      "usdaId": "1286"
+    },
+    "carbohydrate_by_summation_g": {
+      "label": "Carbohydrate, by summation",
+      "unit": "g",
+      "usdaId": "1050"
+    },
+    "carbs_g": {
+      "label": "Carbohydrate, by difference",
+      "unit": "g",
+      "usdaId": "1005"
+    },
+    "carotene_gamma_mcg": {
+      "label": "Carotene, gamma",
+      "unit": "mcg",
+      "usdaId": "1118"
+    },
+    "cholesterol_mg": {
+      "label": "Cholesterol",
+      "unit": "mg",
+      "usdaId": "1253"
+    },
+    "choline_free_mg": {
+      "label": "Choline, free",
+      "unit": "mg",
+      "usdaId": "1194"
+    },
+    "choline_from_glycerophosphocholine_mg": {
+      "label": "Choline, from glycerophosphocholine",
+      "unit": "mg",
+      "usdaId": "1197"
+    },
+    "choline_from_phosphocholine_mg": {
+      "label": "Choline, from phosphocholine",
+      "unit": "mg",
+      "usdaId": "1195"
+    },
+    "choline_from_phosphotidyl_choline_mg": {
+      "label": "Choline, from phosphotidyl choline",
+      "unit": "mg",
+      "usdaId": "1196"
+    },
+    "choline_from_sphingomyelin_mg": {
+      "label": "Choline, from sphingomyelin",
+      "unit": "mg",
+      "usdaId": "1199"
+    },
+    "choline_mg": {
+      "label": "Choline, total",
+      "unit": "mg",
+      "usdaId": "1180"
+    },
+    "cis_beta_carotene_mcg": {
+      "label": "cis-beta-Carotene",
+      "unit": "mcg",
+      "usdaId": "1159"
+    },
+    "cis_lutein_zeaxanthin_mcg": {
+      "label": "cis-Lutein/Zeaxanthin",
+      "unit": "mcg",
+      "usdaId": "1161"
+    },
+    "cis_lycopene_mcg": {
+      "label": "cis-Lycopene",
+      "unit": "mcg",
+      "usdaId": "1160"
+    },
+    "citric_acid_mg": {
+      "label": "Citric acid",
+      "unit": "mg",
+      "usdaId": "1032"
+    },
+    "copper_mg": {
+      "label": "Copper, Cu",
+      "unit": "mg",
+      "usdaId": "1098"
+    },
+    "cryptoxanthin_alpha_mcg": {
+      "label": "Cryptoxanthin, alpha",
+      "unit": "mcg",
+      "usdaId": "2032"
+    },
+    "cysteine_g": {
+      "label": "Cysteine",
+      "unit": "g",
+      "usdaId": "1232"
+    },
+    "cystine_mg": {
+      "label": "Cystine",
+      "unit": "mg",
+      "usdaId": "1216"
+    },
+    "daidzein_mg": {
+      "label": "Daidzein",
+      "unit": "mg",
+      "usdaId": "1340"
+    },
+    "daidzin_mg": {
+      "label": "Daidzin",
+      "unit": "mg",
+      "usdaId": "2049"
+    },
+    "delta_5_avenasterol_mg": {
+      "label": "Delta-5-avenasterol",
+      "unit": "mg",
+      "usdaId": "1296"
+    },
+    "delta_7_stigmastenol_mg": {
+      "label": "Delta-7-Stigmastenol",
+      "unit": "mg",
+      "usdaId": "2052"
+    },
+    "dha_g": {
+      "label": "DHA (docosahexaenoic)",
+      "unit": "g",
+      "usdaId": "1272"
+    },
+    "dpa_g": {
+      "label": "DPA (docosapentaenoic)",
+      "unit": "g",
+      "usdaId": "1280"
+    },
+    "energy_kj": {
+      "label": "Energy",
+      "unit": "kj",
+      "usdaId": "1062"
+    },
+    "epa_g": {
+      "label": "EPA (eicosapentaenoic)",
+      "unit": "g",
+      "usdaId": "1278"
+    },
+    "ergosta_5_7_dienol_mg": {
+      "label": " Ergosta-5,7-dienol",
+      "unit": "mg",
+      "usdaId": "2062"
+    },
+    "ergosta_7_22_dienol_mg": {
+      "label": " Ergosta-7,22-dienol",
+      "unit": "mg",
+      "usdaId": "2061"
+    },
+    "ergosta_7_enol_mg": {
+      "label": "Ergosta-7-enol",
+      "unit": "mg",
+      "usdaId": "2060"
+    },
+    "ergosterol_mg": {
+      "label": "Ergosterol",
+      "unit": "mg",
+      "usdaId": "1284"
+    },
+    "ergothioneine_mg": {
+      "label": "Ergothioneine",
+      "unit": "mg",
+      "usdaId": "2057"
+    },
+    "fat_g": {
+      "label": "Total lipid (fat)",
+      "unit": "g",
+      "usdaId": "1004"
+    },
+    "fat_mufa_g": {
+      "label": "Fatty acids, total monounsaturated",
+      "unit": "g",
+      "usdaId": "1292"
+    },
+    "fat_pufa_g": {
+      "label": "Fatty acids, total polyunsaturated",
+      "unit": "g",
+      "usdaId": "1293"
+    },
+    "fat_saturated_g": {
+      "label": "Fatty acids, total saturated",
+      "unit": "g",
+      "usdaId": "1258"
+    },
+    "fat_trans_g": {
+      "label": "Fatty acids, total trans",
+      "unit": "g",
+      "usdaId": "1257"
+    },
+    "fatty_acids_total_trans_dienoic_g": {
+      "label": "Fatty acids, total trans-dienoic",
+      "unit": "g",
+      "usdaId": "1330"
+    },
+    "fatty_acids_total_trans_monoenoic_g": {
+      "label": "Fatty acids, total trans-monoenoic",
+      "unit": "g",
+      "usdaId": "1329"
+    },
+    "fatty_acids_total_trans_polyenoic_g": {
+      "label": "Fatty acids, total trans-polyenoic",
+      "unit": "g",
+      "usdaId": "1331"
+    },
+    "fiber_g": {
+      "label": "Fiber, total dietary",
+      "unit": "g",
+      "usdaId": "1079"
+    },
+    "fiber_insoluble_g": {
+      "label": "Fiber, insoluble",
+      "unit": "g",
+      "usdaId": "1084"
+    },
+    "fiber_soluble_g": {
+      "label": "Fiber, soluble",
+      "unit": "g",
+      "usdaId": "1082"
+    },
+    "fluoride_mcg": {
+      "label": "Fluoride, F",
+      "unit": "mcg",
+      "usdaId": "1099"
+    },
+    "folate_food_mcg": {
+      "label": "Folate, food",
+      "unit": "mcg",
+      "usdaId": "1187"
+    },
+    "folate_mcg": {
+      "label": "Folate, DFE",
+      "unit": "mcg",
+      "usdaId": "1190"
+    },
+    "folic_acid_mcg": {
+      "label": "Folic acid",
+      "unit": "mcg",
+      "usdaId": "1186"
+    },
+    "fructose_g": {
+      "label": "Fructose",
+      "unit": "g",
+      "usdaId": "1012"
+    },
+    "galactose_g": {
+      "label": "Galactose",
+      "unit": "g",
+      "usdaId": "1075"
+    },
+    "genistein_mg": {
+      "label": "Genistein",
+      "unit": "mg",
+      "usdaId": "1341"
+    },
+    "genistin_mg": {
+      "label": "Genistin",
+      "unit": "mg",
+      "usdaId": "2050"
+    },
+    "glucose_g": {
+      "label": "Glucose",
+      "unit": "g",
+      "usdaId": "1011"
+    },
+    "glutamic_acid_mg": {
+      "label": "Glutamic acid",
+      "unit": "mg",
+      "usdaId": "1224"
+    },
+    "glutathione_mg": {
+      "label": "Glutathione",
+      "unit": "mg",
+      "usdaId": "2069"
+    },
+    "glycine_mg": {
+      "label": "Glycine",
+      "unit": "mg",
+      "usdaId": "1225"
+    },
+    "glycitin_mg": {
+      "label": "Glycitin",
+      "unit": "mg",
+      "usdaId": "2051"
+    },
+    "high_molecular_weight_dietary_fiber_hmwdf_g": {
+      "label": "High Molecular Weight Dietary Fiber (HMWDF)",
+      "unit": "g",
+      "usdaId": "2038"
+    },
+    "histidine_mg": {
+      "label": "Histidine",
+      "unit": "mg",
+      "usdaId": "1221"
+    },
+    "hydroxyproline_mg": {
+      "label": "Hydroxyproline",
+      "unit": "mg",
+      "usdaId": "1228"
+    },
+    "iodine_mcg": {
+      "label": "Iodine, I",
+      "unit": "mcg",
+      "usdaId": "1100"
+    },
+    "iron_mg": {
+      "label": "Iron, Fe",
+      "unit": "mg",
+      "usdaId": "1089"
+    },
+    "isoleucine_mg": {
+      "label": "Isoleucine",
+      "unit": "mg",
+      "usdaId": "1212"
+    },
+    "kcal": {
+      "label": "Energy",
+      "unit": "kcal",
+      "usdaId": "1008"
+    },
+    "la_g": {
+      "label": "LA (linoleic)",
+      "unit": "g",
+      "usdaId": "1316"
+    },
+    "lactose_g": {
+      "label": "Lactose",
+      "unit": "g",
+      "usdaId": "1013"
+    },
+    "leucine_mg": {
+      "label": "Leucine",
+      "unit": "mg",
+      "usdaId": "1213"
+    },
+    "low_molecular_weight_dietary_fiber_lmwdf_g": {
+      "label": "Low Molecular Weight Dietary Fiber (LMWDF)",
+      "unit": "g",
+      "usdaId": "2065"
+    },
+    "lutein_mcg": {
+      "label": "Lutein",
+      "unit": "mcg",
+      "usdaId": "1121"
+    },
+    "lutein_zeaxanthin_mcg": {
+      "label": "Lutein + zeaxanthin",
+      "unit": "mcg",
+      "usdaId": "1123"
+    },
+    "lycopene_mcg": {
+      "label": "Lycopene",
+      "unit": "mcg",
+      "usdaId": "1122"
+    },
+    "lysine_mg": {
+      "label": "Lysine",
+      "unit": "mg",
+      "usdaId": "1214"
+    },
+    "magnesium_mg": {
+      "label": "Magnesium, Mg",
+      "unit": "mg",
+      "usdaId": "1090"
+    },
+    "malic_acid_mg": {
+      "label": "Malic acid",
+      "unit": "mg",
+      "usdaId": "1039"
+    },
+    "maltose_g": {
+      "label": "Maltose",
+      "unit": "g",
+      "usdaId": "1014"
+    },
+    "manganese_mg": {
+      "label": "Manganese, Mn",
+      "unit": "mg",
+      "usdaId": "1101"
+    },
+    "methionine_mg": {
+      "label": "Methionine",
+      "unit": "mg",
+      "usdaId": "1215"
+    },
+    "molybdenum_mcg": {
+      "label": "Molybdenum, Mo",
+      "unit": "mcg",
+      "usdaId": "1102"
+    },
+    "mufa_12_1_g": {
+      "label": "MUFA 12:1",
+      "unit": "g",
+      "usdaId": "2008"
+    },
+    "mufa_14_1_c_g": {
+      "label": "MUFA 14:1 c",
+      "unit": "g",
+      "usdaId": "2009"
+    },
+    "mufa_14_1_g": {
+      "label": "MUFA 14:1",
+      "unit": "g",
+      "usdaId": "1274"
+    },
+    "mufa_15_1_g": {
+      "label": "MUFA 15:1",
+      "unit": "g",
+      "usdaId": "1333"
+    },
+    "mufa_16_1_c_g": {
+      "label": "MUFA 16:1 c",
+      "unit": "g",
+      "usdaId": "1314"
+    },
+    "mufa_16_1_g": {
+      "label": "MUFA 16:1",
+      "unit": "g",
+      "usdaId": "1275"
+    },
+    "mufa_17_1_c_g": {
+      "label": "MUFA 17:1 c",
+      "unit": "g",
+      "usdaId": "2010"
+    },
+    "mufa_17_1_g": {
+      "label": "MUFA 17:1",
+      "unit": "g",
+      "usdaId": "1323"
+    },
+    "mufa_18_1_11_t_18_1t_n_7_g": {
+      "label": "MUFA 18:1-11 t (18:1t n-7)",
+      "unit": "g",
+      "usdaId": "1412"
+    },
+    "mufa_18_1_c_g": {
+      "label": "MUFA 18:1 c",
+      "unit": "g",
+      "usdaId": "1315"
+    },
+    "mufa_18_1_g": {
+      "label": "MUFA 18:1",
+      "unit": "g",
+      "usdaId": "1268"
+    },
+    "mufa_20_1_c_g": {
+      "label": "MUFA 20:1 c",
+      "unit": "g",
+      "usdaId": "2012"
+    },
+    "mufa_20_1_g": {
+      "label": "MUFA 20:1",
+      "unit": "g",
+      "usdaId": "1277"
+    },
+    "mufa_22_1_c_g": {
+      "label": "MUFA 22:1 c",
+      "unit": "g",
+      "usdaId": "1317"
+    },
+    "mufa_22_1_g": {
+      "label": "MUFA 22:1",
+      "unit": "g",
+      "usdaId": "1279"
+    },
+    "mufa_22_1_n_11_g": {
+      "label": "MUFA 22:1 n-11",
+      "unit": "g",
+      "usdaId": "2015"
+    },
+    "mufa_22_1_n_9_g": {
+      "label": "MUFA 22:1 n-9",
+      "unit": "g",
+      "usdaId": "2014"
+    },
+    "mufa_24_1_c_g": {
+      "label": "MUFA 24:1 c",
+      "unit": "g",
+      "usdaId": "1312"
+    },
+    "omega3_g": {
+      "label": "Omega-3 (ALA + EPA + DPA + DHA)",
+      "unit": "g",
+      "usdaId": null
+    },
+    "omega6_g": {
+      "label": "Omega-6 (LA + AA)",
+      "unit": "g",
+      "usdaId": null
+    },
+    "oxalate_mg": {
+      "label": "Oxalic acid",
+      "unit": "mg",
+      "usdaId": "1041"
+    },
+    "phenylalanine_mg": {
+      "label": "Phenylalanine",
+      "unit": "mg",
+      "usdaId": "1217"
+    },
+    "phosphorus_mg": {
+      "label": "Phosphorus, P",
+      "unit": "mg",
+      "usdaId": "1091"
+    },
+    "potassium_mg": {
+      "label": "Potassium, K",
+      "unit": "mg",
+      "usdaId": "1092"
+    },
+    "proline_mg": {
+      "label": "Proline",
+      "unit": "mg",
+      "usdaId": "1226"
+    },
+    "protein_g": {
+      "label": "Protein",
+      "unit": "g",
+      "usdaId": "1003"
+    },
+    "pufa_18_2_c_g": {
+      "label": "PUFA 18:2 c",
+      "unit": "g",
+      "usdaId": "2016"
+    },
+    "pufa_18_2_clas_g": {
+      "label": "PUFA 18:2 CLAs",
+      "unit": "g",
+      "usdaId": "1311"
+    },
+    "pufa_18_2_g": {
+      "label": "PUFA 18:2",
+      "unit": "g",
+      "usdaId": "1269"
+    },
+    "pufa_18_2_i_g": {
+      "label": "PUFA 18:2 i",
+      "unit": "g",
+      "usdaId": "1307"
+    },
+    "pufa_18_3_c_g": {
+      "label": "PUFA 18:3 c",
+      "unit": "g",
+      "usdaId": "2018"
+    },
+    "pufa_18_3_g": {
+      "label": "PUFA 18:3",
+      "unit": "g",
+      "usdaId": "1270"
+    },
+    "pufa_18_3_n_6_c_c_c_g": {
+      "label": "PUFA 18:3 n-6 c,c,c",
+      "unit": "g",
+      "usdaId": "1321"
+    },
+    "pufa_18_3i_g": {
+      "label": "PUFA 18:3i",
+      "unit": "g",
+      "usdaId": "1409"
+    },
+    "pufa_18_4_g": {
+      "label": "PUFA 18:4",
+      "unit": "g",
+      "usdaId": "1276"
+    },
+    "pufa_2_4_n_6_g": {
+      "label": "PUFA 2:4 n-6",
+      "unit": "g",
+      "usdaId": "1408"
+    },
+    "pufa_20_2_c_g": {
+      "label": "PUFA 20:2 c",
+      "unit": "g",
+      "usdaId": "2026"
+    },
+    "pufa_20_2_n_6_c_c_g": {
+      "label": "PUFA 20:2 n-6 c,c",
+      "unit": "g",
+      "usdaId": "1313"
+    },
+    "pufa_20_3_c_g": {
+      "label": "PUFA 20:3 c",
+      "unit": "g",
+      "usdaId": "2020"
+    },
+    "pufa_20_3_g": {
+      "label": "PUFA 20:3",
+      "unit": "g",
+      "usdaId": "1325"
+    },
+    "pufa_20_3_n_3_g": {
+      "label": "PUFA 20:3 n-3",
+      "unit": "g",
+      "usdaId": "1405"
+    },
+    "pufa_20_3_n_9_g": {
+      "label": "PUFA 20:3 n-9",
+      "unit": "g",
+      "usdaId": "1414"
+    },
+    "pufa_20_4_n_6_g": {
+      "label": "PUFA 20:4 n-6",
+      "unit": "g",
+      "usdaId": "1406"
+    },
+    "pufa_20_4c_g": {
+      "label": "PUFA 20:4c",
+      "unit": "g",
+      "usdaId": "2022"
+    },
+    "pufa_20_5c_g": {
+      "label": "PUFA 20:5c",
+      "unit": "g",
+      "usdaId": "2023"
+    },
+    "pufa_21_5_g": {
+      "label": "PUFA 21:5",
+      "unit": "g",
+      "usdaId": "1410"
+    },
+    "pufa_22_2_g": {
+      "label": "PUFA 22:2",
+      "unit": "g",
+      "usdaId": "1334"
+    },
+    "pufa_22_3_g": {
+      "label": "PUFA 22:3",
+      "unit": "g",
+      "usdaId": "2021"
+    },
+    "pufa_22_4_g": {
+      "label": "PUFA 22:4",
+      "unit": "g",
+      "usdaId": "1411"
+    },
+    "pufa_22_5_c_g": {
+      "label": "PUFA 22:5 c",
+      "unit": "g",
+      "usdaId": "2024"
+    },
+    "pufa_22_6_c_g": {
+      "label": "PUFA 22:6 c",
+      "unit": "g",
+      "usdaId": "2025"
+    },
+    "pyruvic_acid_mg": {
+      "label": "Pyruvic acid",
+      "unit": "mg",
+      "usdaId": "1043"
+    },
+    "quinic_acid_mg": {
+      "label": "Quinic acid",
+      "unit": "mg",
+      "usdaId": "1044"
+    },
+    "raffinose_g": {
+      "label": "Raffinose",
+      "unit": "g",
+      "usdaId": "1076"
+    },
+    "resistant_starch_g": {
+      "label": "Resistant starch",
+      "unit": "g",
+      "usdaId": "1071"
+    },
+    "retinol_mcg": {
+      "label": "Retinol",
+      "unit": "mcg",
+      "usdaId": "1105"
+    },
+    "selenium_mcg": {
+      "label": "Selenium, Se",
+      "unit": "mcg",
+      "usdaId": "1103"
+    },
+    "serine_mg": {
+      "label": "Serine",
+      "unit": "mg",
+      "usdaId": "1227"
+    },
+    "sfa_10_0_g": {
+      "label": "SFA 10:0",
+      "unit": "g",
+      "usdaId": "1262"
+    },
+    "sfa_11_0_g": {
+      "label": "SFA 11:0",
+      "unit": "g",
+      "usdaId": "1335"
+    },
+    "sfa_12_0_g": {
+      "label": "SFA 12:0",
+      "unit": "g",
+      "usdaId": "1263"
+    },
+    "sfa_13_0_g": {
+      "label": "SFA 13:0",
+      "unit": "g",
+      "usdaId": "1332"
+    },
+    "sfa_14_0_g": {
+      "label": "SFA 14:0",
+      "unit": "g",
+      "usdaId": "1264"
+    },
+    "sfa_15_0_g": {
+      "label": "SFA 15:0",
+      "unit": "g",
+      "usdaId": "1299"
+    },
+    "sfa_16_0_g": {
+      "label": "SFA 16:0",
+      "unit": "g",
+      "usdaId": "1265"
+    },
+    "sfa_17_0_g": {
+      "label": "SFA 17:0",
+      "unit": "g",
+      "usdaId": "1300"
+    },
+    "sfa_18_0_g": {
+      "label": "SFA 18:0",
+      "unit": "g",
+      "usdaId": "1266"
+    },
+    "sfa_20_0_g": {
+      "label": "SFA 20:0",
+      "unit": "g",
+      "usdaId": "1267"
+    },
+    "sfa_21_0_g": {
+      "label": "SFA 21:0",
+      "unit": "g",
+      "usdaId": "2006"
+    },
+    "sfa_22_0_g": {
+      "label": "SFA 22:0",
+      "unit": "g",
+      "usdaId": "1273"
+    },
+    "sfa_23_0_g": {
+      "label": "SFA 23:0",
+      "unit": "g",
+      "usdaId": "2007"
+    },
+    "sfa_24_0_g": {
+      "label": "SFA 24:0",
+      "unit": "g",
+      "usdaId": "1301"
+    },
+    "sfa_4_0_g": {
+      "label": "SFA 4:0",
+      "unit": "g",
+      "usdaId": "1259"
+    },
+    "sfa_5_0_g": {
+      "label": "SFA 5:0",
+      "unit": "g",
+      "usdaId": "2003"
+    },
+    "sfa_6_0_g": {
+      "label": "SFA 6:0",
+      "unit": "g",
+      "usdaId": "1260"
+    },
+    "sfa_7_0_g": {
+      "label": "SFA 7:0",
+      "unit": "g",
+      "usdaId": "2004"
+    },
+    "sfa_8_0_g": {
+      "label": "SFA 8:0",
+      "unit": "g",
+      "usdaId": "1261"
+    },
+    "sfa_9_0_g": {
+      "label": "SFA 9:0",
+      "unit": "g",
+      "usdaId": "2005"
+    },
+    "sodium_mg": {
+      "label": "Sodium, Na",
+      "unit": "mg",
+      "usdaId": "1093"
+    },
+    "stachyose_g": {
+      "label": "Stachyose",
+      "unit": "g",
+      "usdaId": "1077"
+    },
+    "starch_g": {
+      "label": "Starch",
+      "unit": "g",
+      "usdaId": "1009"
+    },
+    "stigmasterol_mg": {
+      "label": "Stigmasterol",
+      "unit": "mg",
+      "usdaId": "1285"
+    },
+    "sucrose_g": {
+      "label": "Sucrose",
+      "unit": "g",
+      "usdaId": "1010"
+    },
+    "sugars_g": {
+      "label": "Sugars, total",
+      "unit": "g",
+      "usdaId": "2000"
+    },
+    "tfa_14_1_t_g": {
+      "label": "TFA 14:1 t",
+      "unit": "g",
+      "usdaId": "1281"
+    },
+    "tfa_16_1_t_g": {
+      "label": "TFA 16:1 t",
+      "unit": "g",
+      "usdaId": "1303"
+    },
+    "tfa_18_1_t_g": {
+      "label": "TFA 18:1 t",
+      "unit": "g",
+      "usdaId": "1304"
+    },
+    "tfa_18_2_t_g": {
+      "label": "TFA 18:2 t",
+      "unit": "g",
+      "usdaId": "2017"
+    },
+    "tfa_18_2_t_not_further_defined_g": {
+      "label": "TFA 18:2 t not further defined",
+      "unit": "g",
+      "usdaId": "1306"
+    },
+    "tfa_18_2_t_t_g": {
+      "label": "TFA 18:2 t,t",
+      "unit": "g",
+      "usdaId": "1310"
+    },
+    "tfa_18_3_t_g": {
+      "label": "TFA 18:3 t",
+      "unit": "g",
+      "usdaId": "2019"
+    },
+    "tfa_20_1_t_g": {
+      "label": "TFA 20:1 t",
+      "unit": "g",
+      "usdaId": "2013"
+    },
+    "tfa_22_1_t_g": {
+      "label": "TFA 22:1 t",
+      "unit": "g",
+      "usdaId": "1305"
+    },
+    "theobromine_mg": {
+      "label": "Theobromine",
+      "unit": "mg",
+      "usdaId": "1058"
+    },
+    "threonine_mg": {
+      "label": "Threonine",
+      "unit": "mg",
+      "usdaId": "1211"
+    },
+    "tocopherol_beta_mg": {
+      "label": "Tocopherol, beta",
+      "unit": "mg",
+      "usdaId": "1125"
+    },
+    "tocopherol_delta_mg": {
+      "label": "Tocopherol, delta",
+      "unit": "mg",
+      "usdaId": "1127"
+    },
+    "tocopherol_gamma_mg": {
+      "label": "Tocopherol, gamma",
+      "unit": "mg",
+      "usdaId": "1126"
+    },
+    "tocotrienol_alpha_mg": {
+      "label": "Tocotrienol, alpha",
+      "unit": "mg",
+      "usdaId": "1128"
+    },
+    "tocotrienol_beta_mg": {
+      "label": "Tocotrienol, beta",
+      "unit": "mg",
+      "usdaId": "1129"
+    },
+    "tocotrienol_delta_mg": {
+      "label": "Tocotrienol, delta",
+      "unit": "mg",
+      "usdaId": "1131"
+    },
+    "tocotrienol_gamma_mg": {
+      "label": "Tocotrienol, gamma",
+      "unit": "mg",
+      "usdaId": "1130"
+    },
+    "total_dietary_fiber_aoac_2011_25_g": {
+      "label": "Total dietary fiber (AOAC 2011.25)",
+      "unit": "g",
+      "usdaId": "2033"
+    },
+    "total_fat_nlea_g": {
+      "label": "Total fat (NLEA)",
+      "unit": "g",
+      "usdaId": "1085"
+    },
+    "trans_beta_carotene_mcg": {
+      "label": "trans-beta-Carotene",
+      "unit": "mcg",
+      "usdaId": "2028"
+    },
+    "trans_lycopene_mcg": {
+      "label": "trans-Lycopene",
+      "unit": "mcg",
+      "usdaId": "2029"
+    },
+    "tryptophan_mg": {
+      "label": "Tryptophan",
+      "unit": "mg",
+      "usdaId": "1210"
+    },
+    "tyrosine_mg": {
+      "label": "Tyrosine",
+      "unit": "mg",
+      "usdaId": "1218"
+    },
+    "valine_mg": {
+      "label": "Valine",
+      "unit": "mg",
+      "usdaId": "1219"
+    },
+    "verbascose_g": {
+      "label": "Verbascose",
+      "unit": "g",
+      "usdaId": "2063"
+    },
+    "vitamin_a_iu": {
+      "label": "Vitamin A, IU",
+      "unit": "iu",
+      "usdaId": "1104"
+    },
+    "vitamin_a_mcg": {
+      "label": "Vitamin A, RAE",
+      "unit": "mcg",
+      "usdaId": "1106"
+    },
+    "vitamin_b_12_added_mcg": {
+      "label": "Vitamin B-12, added",
+      "unit": "mcg",
+      "usdaId": "1246"
+    },
+    "vitamin_b1_mg": {
+      "label": "Thiamin",
+      "unit": "mg",
+      "usdaId": "1165"
+    },
+    "vitamin_b12_mcg": {
+      "label": "Vitamin B-12",
+      "unit": "mcg",
+      "usdaId": "1178"
+    },
+    "vitamin_b2_mg": {
+      "label": "Riboflavin",
+      "unit": "mg",
+      "usdaId": "1166"
+    },
+    "vitamin_b3_mg": {
+      "label": "Niacin",
+      "unit": "mg",
+      "usdaId": "1167"
+    },
+    "vitamin_b5_mg": {
+      "label": "Pantothenic acid",
+      "unit": "mg",
+      "usdaId": "1170"
+    },
+    "vitamin_b6_mg": {
+      "label": "Vitamin B-6",
+      "unit": "mg",
+      "usdaId": "1175"
+    },
+    "vitamin_c_mg": {
+      "label": "Vitamin C, total ascorbic acid",
+      "unit": "mg",
+      "usdaId": "1162"
+    },
+    "vitamin_d_iu": {
+      "label": "Vitamin D (D2 + D3), IU",
+      "unit": "iu",
+      "usdaId": "1110"
+    },
+    "vitamin_d_mcg": {
+      "label": "Vitamin D (D2 + D3)",
+      "unit": "mcg",
+      "usdaId": "1114"
+    },
+    "vitamin_d2_ergocalciferol_mcg": {
+      "label": "Vitamin D2 (ergocalciferol)",
+      "unit": "mcg",
+      "usdaId": "1111"
+    },
+    "vitamin_d3_cholecalciferol_mcg": {
+      "label": "Vitamin D3 (cholecalciferol)",
+      "unit": "mcg",
+      "usdaId": "1112"
+    },
+    "vitamin_d4_mcg": {
+      "label": "Vitamin D4",
+      "unit": "mcg",
+      "usdaId": "2059"
+    },
+    "vitamin_e_added_mg": {
+      "label": "Vitamin E, added",
+      "unit": "mg",
+      "usdaId": "1242"
+    },
+    "vitamin_e_mg": {
+      "label": "Vitamin E (alpha-tocopherol)",
+      "unit": "mg",
+      "usdaId": "1109"
+    },
+    "vitamin_k_dihydrophylloquinone_mcg": {
+      "label": "Vitamin K (Dihydrophylloquinone)",
+      "unit": "mcg",
+      "usdaId": "1184"
+    },
+    "vitamin_k_mcg": {
+      "label": "Vitamin K (phylloquinone)",
+      "unit": "mcg",
+      "usdaId": "1185"
+    },
+    "vitamin_k_menaquinone_4_mcg": {
+      "label": "Vitamin K (Menaquinone-4)",
+      "unit": "mcg",
+      "usdaId": "1183"
+    },
+    "water_ml": {
+      "label": "Water",
+      "unit": "ml",
+      "usdaId": "1051"
+    },
+    "zeaxanthin_mcg": {
+      "label": "Zeaxanthin",
+      "unit": "mcg",
+      "usdaId": "1119"
+    },
+    "zinc_mg": {
+      "label": "Zinc, Zn",
+      "unit": "mg",
+      "usdaId": "1095"
+    }
+  }
+}

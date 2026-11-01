@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 
 import { reviewRecipe } from "@/app/actions/admin";
 import { IngredientMapper } from "@/components/admin/ingredient-mapper";
+import { NutrientPanel } from "@/components/nutrient-panel";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea } from "@/components/ui/field";
+import { computeRecipePanel, scalePanel } from "@/lib/nutrition/panel";
 import { adminRecipe } from "@/lib/queries/admin";
 import { absoluteUrl } from "@/lib/site";
 import { formatDate, formatNumber } from "@/lib/utils";
@@ -24,6 +26,12 @@ export default async function AdminRecipePage({
   if (!data) notFound();
 
   const { recipe, ingredients, steps, tags, nutrition, gate, strikes } = data;
+
+  const panel = computeRecipePanel(ingredients, recipe.servings);
+  const hundredGramPanel =
+    recipe.servingGrams && recipe.servingGrams > 0
+      ? scalePanel(panel, 100 / recipe.servingGrams)
+      : null;
 
   const imageSrc = recipe.imageUrl?.startsWith("http")
     ? recipe.imageUrl
@@ -152,6 +160,14 @@ export default async function AdminRecipePage({
               ))}
             </ul>
           </section>
+
+          <NutrientPanel
+            embedded
+            panel={panel}
+            perHundredPanel={hundredGramPanel}
+            servingNote={recipe.servingNote}
+            servingGrams={recipe.servingGrams}
+          />
 
           <section className="mt-6">
             <div className="border-b border-line pb-3">

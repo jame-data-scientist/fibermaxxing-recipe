@@ -37,6 +37,13 @@ export const SCHEMA_STATEMENTS: string[] = [
   )`,
   `create index if not exists food_portions_food_idx on food_portions (fdc_id)`,
 
+  `create table if not exists food_nutrients (
+    fdc_id text primary key references foods (fdc_id) on delete cascade,
+    nutrients text not null,
+    source text not null default 'usda',
+    updated_at integer not null default (unixepoch() * 1000)
+  )`,
+
   `create table if not exists recipes (
     id text primary key,
     slug text not null,

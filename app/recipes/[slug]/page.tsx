@@ -3,11 +3,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { MacroStrip } from "@/components/macro-strip";
+import { NutrientPanel } from "@/components/nutrient-panel";
 import { RecipeCard } from "@/components/recipe-card";
 import { RecipeCover } from "@/components/recipe-cover";
 import { UnitToggle } from "@/components/unit-toggle";
 import { buttonVariants } from "@/components/ui/button";
 import { perHundredGrams } from "@/lib/nutrition/compute";
+import {
+  computeRecipePanel,
+  scalePanel,
+} from "@/lib/nutrition/panel";
 import {
   getRecipeBySlug,
   relatedRecipes,
@@ -54,6 +59,11 @@ export default async function RecipePage({
   if (!recipe) notFound();
 
   const related = await relatedRecipes(slug, recipe.tags);
+  const panel = computeRecipePanel(recipe.ingredients, recipe.servings);
+  const hundredGramPanel =
+    recipe.servingGrams && recipe.servingGrams > 0
+      ? scalePanel(panel, 100 / recipe.servingGrams)
+      : null;
   const per100 = perHundredGrams(
     {
       kcal: recipe.kcal,
@@ -296,6 +306,15 @@ export default async function RecipePage({
               </tbody>
             </table>
 
+            {panel.count ? (
+              <a
+                href="#full-nutrition"
+                className="mt-3 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.1em] text-forest underline decoration-line-strong underline-offset-4"
+              >
+                Full nutrient panel <span aria-hidden="true">↓</span>
+              </a>
+            ) : null}
+
             <details className="mt-4 text-[12px] leading-relaxed text-moss">
               <summary className="cursor-pointer font-medium text-forest">
                 How this was calculated
@@ -337,6 +356,13 @@ export default async function RecipePage({
           </p>
         </aside>
       </div>
+
+      <NutrientPanel
+        panel={panel}
+        perHundredPanel={hundredGramPanel}
+        servingNote={recipe.servingNote}
+        servingGrams={recipe.servingGrams}
+      />
 
       {related.length ? (
         <section className="container-page mt-20 border-t border-line pt-10">

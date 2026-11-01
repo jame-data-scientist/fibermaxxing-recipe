@@ -6,7 +6,7 @@ export const SITE_URL =
 
 export const PLAY_STORE_URL =
   process.env.NEXT_PUBLIC_PLAY_STORE_URL ??
-  "https://play.google.com/store/apps/details?id=com.example.fibermaxxing";
+  "https://play.google.com/store/apps/details?id=com.slothdev.fibermaxxing";
 
 /**
  * Bump when the contributor licence or terms change. Every submission stores

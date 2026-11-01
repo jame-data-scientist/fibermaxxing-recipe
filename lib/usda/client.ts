@@ -1,3 +1,7 @@
+import {
+  buildNutrientPanel,
+  type UsdaNutrientMeta,
+} from "@/lib/nutrition/nutrients";
 import { parsePortionUnit, type UnitId } from "@/lib/nutrition/units";
 
 /**
@@ -24,27 +28,23 @@ export interface LiveFood {
   fiberG: number | null;
   sugarG: number | null;
   sodiumMg: number | null;
+  /** Canonical key -> amount per 100 g, built from every nutrient returned. */
+  nutrients: Record<string, number>;
   portions: LivePortion[];
 }
-
-const NUTRIENT_KEYS: Record<number, keyof Omit<LiveFood, "fdcId" | "description" | "dataType" | "portions">> = {
-  1008: "kcal",
-  2048: "kcal",
-  2047: "kcal",
-  1003: "proteinG",
-  1004: "fatG",
-  1005: "carbsG",
-  1079: "fiberG",
-  2000: "sugarG",
-  1093: "sodiumMg",
-};
 
 interface UsdaSearchResponse {
   foods?: {
     fdcId: number;
     description: string;
     dataType?: string;
-    foodNutrients?: { nutrientId?: number; nutrientNumber?: string; value?: number }[];
+    foodNutrients?: {
+      nutrientId?: number;
+      nutrientNumber?: string;
+      nutrientName?: string;
+      unitName?: string;
+      value?: number;
+    }[];
     foodPortions?: {
       amount?: number;
       gramWeight?: number;
@@ -75,16 +75,25 @@ export async function usdaSearch(query: string): Promise<LiveFood[]> {
 
     return (data.foods ?? [])
       .map((food) => {
-        const values: Record<string, number | null> = {};
+        const raw = new Map<string, number>();
+        const meta = new Map<string, UsdaNutrientMeta>();
         for (const nutrient of food.foodNutrients ?? []) {
-          const key =
-            nutrient.nutrientId != null
-              ? NUTRIENT_KEYS[nutrient.nutrientId]
-              : undefined;
-          if (key && values[key] == null && typeof nutrient.value === "number") {
-            values[key] = nutrient.value;
+          if (
+            nutrient.nutrientId == null ||
+            typeof nutrient.value !== "number"
+          ) {
+            continue;
+          }
+          const id = String(nutrient.nutrientId);
+          if (!raw.has(id)) raw.set(id, nutrient.value);
+          if (nutrient.nutrientName && !meta.has(id)) {
+            meta.set(id, {
+              name: nutrient.nutrientName,
+              unit: nutrient.unitName ?? "",
+            });
           }
         }
+        const panel = buildNutrientPanel(raw, meta);
 
         const portions: LivePortion[] = [];
         for (const portion of food.foodPortions ?? []) {
@@ -106,13 +115,14 @@ export async function usdaSearch(query: string): Promise<LiveFood[]> {
           fdcId: String(food.fdcId),
           description: food.description,
           dataType: food.dataType === "Foundation" ? "foundation_food" : "sr_legacy_food",
-          kcal: values.kcal ?? null,
-          proteinG: values.proteinG ?? null,
-          carbsG: values.carbsG ?? null,
-          fatG: values.fatG ?? null,
-          fiberG: values.fiberG ?? null,
-          sugarG: values.sugarG ?? null,
-          sodiumMg: values.sodiumMg ?? null,
+          kcal: panel.values.kcal ?? null,
+          proteinG: panel.values.protein_g ?? null,
+          carbsG: panel.values.carbs_g ?? null,
+          fatG: panel.values.fat_g ?? null,
+          fiberG: panel.values.fiber_g ?? null,
+          sugarG: panel.values.sugars_g ?? null,
+          sodiumMg: panel.values.sodium_mg ?? null,
+          nutrients: panel.values,
           portions,
         } satisfies LiveFood;
       })

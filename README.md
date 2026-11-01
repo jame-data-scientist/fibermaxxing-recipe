@@ -55,8 +55,8 @@ Useful scripts:
 
 ```bash
 npm run db:init      # apply the SQLite schema to D1 or the local file
-npm run seed:foods   # rebuild seed/foods.json from ../data/usda
-npm run seed         # load foods and portions
+npm run seed:foods   # rebuild seed/foods.json + seed/nutrients.json from ../data/usda
+npm run seed         # load foods, full nutrient panels and portions
 npm run typecheck
 npm test
 npm run build
@@ -87,10 +87,18 @@ a density.
 
 The catalog is built from the USDA CSV dumps in `../data/usda` by
 `scripts/build-seed.ts` (~1,400 foods selected by a curated common-ingredient
-allowlist). At runtime, `/api/foods/search` searches that cache first. Only when
+allowlist). Every food stores the full per-100 g panel — all 149 nutrient ids
+USDA publishes (230 distinct keys once Foundation is included), not just the
+seven macro columns — in `food_nutrients.nutrients`, keyed by
+`lib/nutrition/nutrients.ts` and labelled by `seed/nutrients.json`. Foods USDA
+does not carry (psyllium husk, kangaroo) live in `seed/supplements.json` with
+their source recorded.
+
+At runtime, `/api/foods/search` searches that cache first. Only when
 fewer than three results come back does it call FoodData Central with
-`FDC_API_KEY`, and every live result (plus its portions) is written into D1
-before the response is returned. A repeated search is therefore a pure database
+`FDC_API_KEY`, and every live result (plus its portions and whatever nutrients
+the API returned) is written into D1 before the response is returned — unless a
+fuller seeded panel already exists for that food. A repeated search is therefore a pure database
 read, and the API is never called twice for the same food.
 
 Without `FDC_API_KEY` the search silently stays on the local catalog; that is a
@@ -149,8 +157,9 @@ HMAC of the key, so rotating the env var invalidates every session. Admin pages:
 4. Set the variables from `.env.example`: `CF_ACCOUNT_ID`,
    `CF_D1_DATABASE_ID`, `CF_D1_API_TOKEN`, `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`,
    `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`, `ADMIN_KEY`,
-   `NEXT_PUBLIC_SITE_URL`, `DMCA_AGENT_EMAIL`, `NEXT_PUBLIC_PLAY_STORE_URL`,
-   plus `TURNSTILE_*` and `FDC_API_KEY` when you have them.
+   `NEXT_PUBLIC_SITE_URL`, `DMCA_AGENT_EMAIL`, `ACCOUNT_DELETION_EMAIL`,
+   `NEXT_PUBLIC_PLAY_STORE_URL`, plus `TURNSTILE_*` and `FDC_API_KEY` when you
+   have them.
 5. Run `npm run db:init && npm run seed` once against the same variables
    (locally, or as a one-off job).
 6. Deploy.
@@ -170,6 +179,15 @@ which streams the converted bytes to R2.
 - `DMCA_AGENT_EMAIL` must be a real monitored inbox before launch. Register the
   agent with the U.S. Copyright Office (~$6, renewed every 3 years) if you want
   the §512 safe harbour.
+
+## Account deletion
+
+`/account-deletion` is the public URL to give Google Play for the data-deletion
+policy. It sends people to **Profile → Delete account** in the app and explains
+what is removed, what is retained and how subscriptions work. Set
+`ACCOUNT_DELETION_EMAIL` to a monitored inbox before publishing; the default is
+`slothdevwork@gmail.com`. The in-app path calls the `deleteAccount` Cloud
+Function, which recursively deletes `users/{uid}` and the Auth account.
 
 **Do not seed this site with FatSecret recipes.** Their terms allow a 24-hour
 cache, not republication. `seed/recipes.ts` is intentionally empty, so seeding

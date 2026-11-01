@@ -31,6 +31,7 @@ export default function SubmitPage() {
           <p className="eyebrow">Before you start</p>
           <ul className="mt-3 space-y-2 text-[12px] leading-relaxed text-moss">
             <li>· Have your ingredient amounts to hand.</li>
+            <li>· No pork and no alcohol — we don’t publish those recipes.</li>
             <li>· One photo of the finished dish is required.</li>
             <li>
               · It must be a photo you took yourself.{" "}

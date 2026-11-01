@@ -75,6 +75,22 @@ export const foodPortions = sqliteTable(
   (t) => [index("food_portions_food_idx").on(t.fdcId)],
 );
 
+/**
+ * The full USDA panel for a food, per 100 g, as JSON keyed by the canonical
+ * names in `lib/nutrition/nutrients.ts`. Kept in its own table so the catalog
+ * can carry ~150 values per food without widening every `foods` read.
+ */
+export const foodNutrients = sqliteTable("food_nutrients", {
+  fdcId: text("fdc_id")
+    .primaryKey()
+    .references(() => foods.fdcId, { onDelete: "cascade" }),
+  nutrients: text("nutrients").notNull(),
+  source: text("source").notNull().default("usda"),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});
+
 /* -------------------------------------------------------------------------- */
 /*  Recipes                                                                   */
 /* -------------------------------------------------------------------------- */
@@ -305,3 +321,4 @@ export type RecipeIngredient = typeof recipeIngredients.$inferSelect;
 export type Nutrition = typeof recipeNutrition.$inferSelect;
 export type Food = typeof foods.$inferSelect;
 export type FoodPortion = typeof foodPortions.$inferSelect;
+export type FoodNutrientPanel = typeof foodNutrients.$inferSelect;

@@ -7,6 +7,7 @@ const columns = [
     heading: "Browse",
     links: [
       { href: "/recipes", label: "All recipes" },
+      { href: "/leaderboards", label: "Leaderboards" },
       { href: "/recipes?tag=high_fiber", label: "High fibre" },
       { href: "/recipes?tag=high_protein", label: "High protein" },
       { href: "/recipes?tag=both", label: "Both" },
@@ -27,6 +28,7 @@ const columns = [
       { href: "/dmca", label: "Copyright & DMCA" },
       { href: "/terms", label: "Terms of use" },
       { href: "/privacy", label: "Privacy" },
+      { href: "/account-deletion", label: "Delete account" },
     ],
   },
 ];
